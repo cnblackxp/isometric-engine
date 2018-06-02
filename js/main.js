@@ -127,7 +127,7 @@ const drawBlockMap = (w, h) => {
 
 
 //translate canvas to the middle
-ctx.translate(canvas.width/ 2, 50);
+ctx.translate(canvas.width/ 2, 100);
 
 
 
