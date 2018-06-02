@@ -1,3 +1,5 @@
+import { randomColor, randomColorObject, color, shade, bright } from "./color.js";
+
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
 
@@ -8,27 +10,14 @@ const resize = () => {
 resize();
 window.addEventListener('resize', resize);
 
-const tile_width = 50;
-const tile_height = 25;
+const tile_width = 20;
+const tile_height = tile_width/2;
 
 
-const randomColor = () => `rgb(${Math.random()*255},${Math.random()*255},${Math.random()*255})`;
-const randomColorObject = () => ({
-    r: Math.random()*255,
-    g: Math.random()*255,
-    b: Math.random()*255,
-});
-const color = (c) => `rgb(${c.r},${c.g},${c.b})`;
-
-const shade = (c, shade_factor) => {
-    const r = c.r * (1 - shade_factor);
-    const g = c.g * (1 - shade_factor);
-    const b = c.b * (1 - shade_factor);
-    return {r, g, b}
-}
 
 
-const drawTile = (x, y, color) => {
+
+const drawTile = (x, y, c) => {
     ctx.save();
     //the new tile position is to move tile_width/2 on the x and tile_height/2 on the y
     ctx.translate(
@@ -43,7 +32,7 @@ const drawTile = (x, y, color) => {
     ctx.lineTo(0, tile_height);
     ctx.lineTo(-tile_width/2, tile_height/2);
     ctx.closePath();
-    ctx.fillStyle = color;
+    ctx.fillStyle = color(c);
     ctx.fill();
 
 
@@ -57,7 +46,7 @@ const drawBlock = (x, y, z, c) => {
 
 
     if (c) {
-        console.log(c);
+        // console.log(c);
         top = color(c);
         right = color(shade(c, 0.2)); //dark
         left = color(shade(c, 0.5)); //darker
@@ -106,15 +95,29 @@ const drawBlock = (x, y, z, c) => {
 }
 
 
-const drawMap = (w, h) => {
+const drawMapRandom = (w, h) => {
     for (let x = 0; x < w; x ++) {
         for (let y = 0; y < h; y ++) {
-            drawTile(x, y, randomColor());
+            drawTile(x, y, randomColorObject());
         }
     }
 }
 
-const drawBlockMap = (w, h) => {
+const drawMap = (map) => {
+    for (let y = 0; y < map.length; y ++) {
+        for (let x = 0; x < map[y].length; x ++) {
+            if (!map[y][x].elevation || (map[x][y].elevation == 0)) {
+                drawTile(x, y, map[y][x].color);
+                console.log('tile')
+            }
+            else 
+                drawBlock(x, y, map[y][x].elevation, map[y][x].color)
+        }
+    }   
+}
+
+
+const drawRandomBlockMap = (w, h) => {
     for (let x = 0; x < w; x ++) {
         for (let y = 0; y < h; y ++) {
             // drawBlock(x, y, Math.floor(Math.random() * 4) );
@@ -125,12 +128,257 @@ const drawBlockMap = (w, h) => {
 
 }
 
+const drawBlockMap = (w, h) => {
+    for (let x = 0; x < w; x ++) {
+        for (let y = 0; y < h; y ++) {
+            // drawBlock(x, y, Math.floor(Math.random() * 4) );
+            drawBlock(x, y, Math.floor(Math.random() * 4), randomColorObject() );
+            // drawBlock(x, y, Math.random() * 5, randomColorObject() );
+        }
+    }
+
+}
+
+
+//
+
+
+
+
 
 //translate canvas to the middle
-ctx.translate(canvas.width/ 2, 100);
+ctx.translate(canvas.width/ 2, 50);
+drawMapRandom(50, 50)
 
 
+random_map_btn.addEventListener('click', () => {
+    ctx.translate(- canvas.width/2, -50);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.translate(canvas.width/2, 50);
+    drawRandomBlockMap(50, 50)
+});
+random_block_map_btn.addEventListener('click', () => {
+    ctx.translate(- canvas.width/2, -50);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.translate(canvas.width/2, 50);
+    drawBlockMap(50, 50)
+});
+random_tiled_map_btn.addEventListener('click', () => {
+    ctx.translate(- canvas.width/2, -50);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.translate(canvas.width/2, 50);
+    drawMapRandom(50, 50)
+});
+
+
+
+// let map = [
+//     [{color: {r: 255, g:0, b:0}, elevation: 0.5},{color: {r: 255, g:0, b:0}, elevation: 0.5},{color: {r: 255, g:0, b:0}, elevation: 0.5},{color: {r: 255, g:0, b:0}, elevation: 0.5}],
+//     [{color: {r: 255, g:0, b:0}, elevation: 0.5},{color: {r: 0, g:255, b:0}, elevation: 0},{color: {r: 0, g:255, b:0}, elevation: 0},{color: {r: 255, g:0, b:0}, elevation: 0.5}],
+//     [{color: {r: 255, g:0, b:0}, elevation: 0.5},{color: {r: 0, g:255, b:0}, elevation: 0},{color: {r: 0, g:255, b:0}, elevation: 0},{color: {r: 255, g:0, b:0}, elevation: 0.5}],
+//     [{color: {r: 255, g:0, b:0}, elevation: 0.5},{color: {r: 255, g:0, b:0}, elevation: 0.5},{color: {r: 255, g:0, b:0}, elevation: 0.5},{color: {r: 255, g:0, b:0}, elevation: 0.5}],
+// ];
+
+// const map = [
+//     [randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor()],
+//     [randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor()],
+//     [randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor()],
+//     [randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor()],
+//     [randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor()],
+//     [randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor()],
+//     [randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor()],
+//     [randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor(),randomColor()],
+// ];
 
 
 // drawMap(25,25);
-drawBlockMap(25,25);
+// drawBlockMap(25,25);
+// drawMap(map);
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////evelated map
+const top_color = '#eee',
+        right_color = '#ccc',
+        left_color = '#999';
+const _top_color = {
+    r: 200,
+    g: 200,
+    b: 200,
+}
+
+const _translate = (x, y) => 
+    ctx.translate((x-y) * tile_width/2, (y+x) * tile_height/2);
+
+    
+const _drawLast = [];
+
+const _drawTile = (x, y, z) => {
+    ctx.save();
+    _translate(x,y);
+    ctx.beginPath();
+    ctx.moveTo(0, -z*tile_height);
+    ctx.lineTo(tile_width/2, tile_height/2 -z*tile_height);
+    ctx.lineTo(0, tile_height -z*tile_height);
+    ctx.lineTo(-tile_width/2, tile_height/2 -z*tile_height);
+    ctx.closePath();
+    ctx.fillStyle = color(_top_color);//z > 0 ? right_color: top_color;
+    ctx.fill();
+    ctx.restore();
+    
+
+    if (z > 0) {
+        console.log(z);
+
+        _drawLast.push(() => {
+            //x + 1, y
+            ctx.save();
+            _translate(x + 1, y);
+            ctx.beginPath();
+            ctx.moveTo(0, -z*tile_height);
+            ctx.lineTo(tile_width/2, tile_height/2);
+            ctx.lineTo(0, tile_height);
+            ctx.lineTo(-tile_width/2, tile_height/2 -z*tile_height);
+            ctx.closePath();
+            ctx.fillStyle = color(shade(_top_color, -0.2));
+            ctx.fill();
+            ctx.restore();
+
+
+            //x, y + 1
+            ctx.save();
+            _translate(x,y + 1);
+            ctx.beginPath();
+            ctx.moveTo(0, -z*tile_height);
+            ctx.lineTo(tile_width/2, tile_height/2 -z*tile_height);
+            ctx.lineTo(0, tile_height);
+            ctx.lineTo(-tile_width/2, tile_height/2);
+            ctx.closePath();
+            ctx.fillStyle = color(shade(_top_color, 0.2));
+            ctx.fill();
+            ctx.restore();
+
+            //x - 1, y
+            ctx.save();
+            _translate(x - 1,y);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(tile_width/2, tile_height/2 -z*tile_height);
+            ctx.lineTo(0, tile_height -z*tile_height);
+            ctx.lineTo(-tile_width/2, tile_height/2);
+            ctx.closePath();
+            ctx.fillStyle = color(shade(_top_color, 0.35));
+            ctx.fill();
+            ctx.restore();
+
+            //x, y - 1
+            ctx.save();
+            _translate(x,y - 1);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(tile_width/2, tile_height/2);
+            ctx.lineTo(0, tile_height -z*tile_height);
+            ctx.lineTo(-tile_width/2, tile_height/2  -z*tile_height);
+            ctx.closePath();
+            ctx.fillStyle = color(shade(_top_color, 0.2));
+            ctx.fill();
+            ctx.restore();
+
+            //x + 1, y + 1
+            ctx.save();
+            _translate(x + 1,y + 1);
+            ctx.beginPath();
+            ctx.moveTo(0, -z*tile_height);
+            ctx.lineTo(tile_width/2, tile_height/2);
+            // ctx.lineTo(0, tile_height -z*tile_height);
+            ctx.lineTo(-tile_width/2, tile_height/2);
+            ctx.closePath();
+            ctx.fillStyle = color(shade(_top_color, -0.15));
+            ctx.fill();
+            ctx.restore();
+
+            //x - 1, y + 1
+            ctx.save();
+            _translate(x - 1,y + 1);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(tile_width/2, tile_height/2 -z*tile_height);
+            ctx.lineTo(0, tile_height);
+            // ctx.lineTo(-tile_width/2, tile_height/2);
+            ctx.closePath();
+            ctx.fillStyle = color(shade(_top_color, 0.3));
+            ctx.fill();
+            ctx.restore();
+
+            //x + 1, y - 1
+            ctx.save();
+            _translate(x + 1,y - 1);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            // ctx.lineTo(tile_width/2, tile_height/2 -z*tile_height);
+            ctx.lineTo(0, tile_height);
+            ctx.lineTo(-tile_width/2, tile_height/2 -z*tile_height);
+            ctx.closePath();
+            ctx.fillStyle = color(shade(_top_color, -0.15));
+            ctx.fill();
+            ctx.restore();
+
+            //x - 1, y - 1
+            ctx.save();
+            _translate(x - 1,y - 1);
+            ctx.beginPath();
+            // ctx.moveTo(0, 0);
+            ctx.moveTo(tile_width/2, tile_height/2);
+            ctx.lineTo(0, tile_height -z*tile_height);
+            ctx.lineTo(-tile_width/2, tile_height/2);
+            ctx.closePath();
+            ctx.fillStyle = color(shade(_top_color, 0.3));
+            ctx.fill();
+            ctx.restore();
+
+
+        })
+
+        
+    }
+
+
+}
+
+const size = 10;
+
+
+const drawElevation = () => {
+    for (let x = 0; x < size; x ++) {
+        for (let y = 0; y < size; y ++) {
+            _drawTile(x, y, x == size/2 -1 & y == size/2 -1 ? 0.3 : 0);
+        }
+    }
+    _drawLast.forEach(el => el());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
