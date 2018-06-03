@@ -94,6 +94,62 @@ const drawBlock = (x, y, z, c) => {
     ctx.restore();
 }
 
+const draw3DBlock = (x, y, z, c) => {
+
+    let top = '#eee',
+        right = '#ccc',
+        left = '#999';
+
+
+    if (c) {
+        // console.log(c);
+        top = color(c);
+        right = color(shade(c, 0.2)); //dark
+        left = color(shade(c, 0.5)); //darker
+    }
+
+    ctx.save();
+    ctx.translate((x-y) * tile_width/2, (y+x) * tile_height/2);
+    
+    
+
+    //top side
+    ctx.beginPath();
+    ctx.moveTo(0, -z * tile_height);
+    ctx.lineTo(tile_width/2, tile_height/2 -z * tile_height);
+    ctx.lineTo(0, tile_height -z * tile_height);
+    ctx.lineTo(-tile_width/2, tile_height/2 -z * tile_height);
+    ctx.closePath();
+    ctx.fillStyle = top;
+    ctx.fill();
+
+    //left side
+    ctx.beginPath();
+    ctx.moveTo(-tile_width/2, tile_height/2 -z * tile_height);
+    ctx.lineTo(0, tile_height -z * tile_height);
+    ctx.lineTo(0, tile_height -(z-1) * tile_height);
+    ctx.lineTo(-tile_width/2, tile_height/2 -(z-1) * tile_height);
+    ctx.closePath();
+    ctx.fillStyle = left;
+    ctx.fill();
+
+
+    //same as above we changed -tile_width/2 to tile_width/2
+    //right side
+    ctx.beginPath();
+    ctx.moveTo(tile_width/2, tile_height/2 -z * tile_height);
+    ctx.lineTo(0, tile_height -z * tile_height);
+    ctx.lineTo(0, tile_height-(z-1) * tile_height);
+    ctx.lineTo(tile_width/2, tile_height/2-(z-1) * tile_height);
+    ctx.closePath();
+    ctx.fillStyle = right;
+    ctx.fill();
+
+
+
+    ctx.restore();
+}
+
 
 const drawMapRandom = (w, h) => {
     for (let x = 0; x < w; x ++) {
@@ -139,6 +195,18 @@ const drawBlockMap = (w, h) => {
 
 }
 
+const draw3DMap = (w, h, l) => {
+    for (let z = 0; z < l; z ++) {
+        for (let y = 0; y < h; y ++) {
+            for (let x = 0; x < w; x ++) {
+                // if (Math.random() < 0.5)
+                if (z%20 === 0)
+                    draw3DBlock(x, y, z, randomColorObject() );
+            }
+        }
+    }
+}
+
 
 //
 
@@ -147,9 +215,9 @@ const drawBlockMap = (w, h) => {
 
 
 //translate canvas to the middle
-ctx.translate(canvas.width/ 2, 50);
-drawMapRandom(50, 50)
-
+ctx.translate(canvas.width/ 2, 300);
+// drawMapRandom(50, 50)
+draw3DMap(50,50,50);
 
 random_map_btn.addEventListener('click', () => {
     ctx.translate(- canvas.width/2, -50);
