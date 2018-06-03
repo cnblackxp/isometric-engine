@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="shortcut icon" href="assets/player.png" type="image/x-icon">
     <link rel="stylesheet" href="css/style.css">
     <title>ISOMETRIC</title>
 </head>
 <body>
-    <canvas></canvas>
+    <canvas iso-background></canvas>
+    <!-- player canvas -->
+    <canvas iso-player style="z-index: -9;background-color: transparent"></canvas>
     <div class="editor">
         <!-- random -->
         <button id="random_map_btn">random map</button>

@@ -1,14 +1,25 @@
 import { randomColor, randomColorObject, color, shade, bright } from "./color.js";
 
-const canvas = document.querySelector('canvas');
+const canvas = document.querySelector('canvas[iso-background]');
 const ctx = canvas.getContext('2d');
+
+const canvasPlayer = document.querySelector('canvas[iso-player]');
+const ctxPlayer = canvasPlayer.getContext('2d');
 
 const resize = () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+
+    canvasPlayer.width = window.innerWidth;
+    canvasPlayer.height = window.innerHeight;
 }
 resize();
 window.addEventListener('resize', resize);
+
+
+let keys = {};
+document.addEventListener('keydown', (e) => keys[e.key] = true);
+document.addEventListener('keyup', (e) => keys[e.key] = false);
 
 const tile_width = 20;
 const tile_height = tile_width/2;
@@ -110,6 +121,10 @@ const draw3DBlock = (x, y, z, c) => {
 
     ctx.save();
     ctx.translate((x-y) * tile_width/2, (y+x) * tile_height/2);
+
+    if (z > 5) {
+        ctx.globalAlpha = 0.2;
+    }
     
     
 
@@ -144,6 +159,7 @@ const draw3DBlock = (x, y, z, c) => {
     ctx.closePath();
     ctx.fillStyle = right;
     ctx.fill();
+    ctx.globalAlpha = 1;
 
 
 
@@ -207,6 +223,32 @@ const draw3DMap = (w, h, l) => {
     }
 }
 
+const drawImage = (x, y, img, _ctx) => {
+
+    if (_ctx === undefined)
+        _ctx = ctx;
+
+    _ctx.save();
+    //the new tile position is to move tile_width/2 on the x and tile_height/2 on the y
+    _ctx.translate(
+        (x-y) * tile_width/2,
+        //this wont have any effect if it's zer0 
+        (y+x) * tile_height/2
+    );
+    
+    _ctx.drawImage(img, -img.width/2, -img.height + tile_height/2);
+
+
+    _ctx.restore();
+}
+
+const preloadImage = (src, cb) => {
+    if (cb === undefined) cb = () => 1;
+    const img = new Image();
+    img.onload = () => cb(img);
+    img.src = src;
+    return img;
+}
 
 //
 
@@ -215,20 +257,55 @@ const draw3DMap = (w, h, l) => {
 
 
 //translate canvas to the middle
-ctx.translate(canvas.width/ 2, 300);
-// drawMapRandom(50, 50)
-draw3DMap(50,50,50);
+let canvasY = 100
 
-random_map_btn.addEventListener('click', () => {
-    ctx.translate(- canvas.width/2, -50);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.translate(canvas.width/2, 50);
+const clearCtx = (_ctx, _canvas) => {
+    _ctx.translate(- _canvas.width/2, -canvasY);
+    _ctx.clearRect(0, 0, _canvas.width, _canvas.height);
+    _ctx.translate(_canvas.width/2, canvasY);
+}
+
+ctx.translate(canvas.width/ 2, canvasY);
+ctxPlayer.translate(canvasPlayer.width/ 2, canvasY);
+
+ctx.globalAlpha = 0.5;
+drawMapRandom(50, 50);
+ctx.globalAlpha = 1;
+const playerImage = preloadImage('assets/player.png')//, (img) => drawImage(0,0, img,ctxPlayer));
+let playerX = 0;
+let playerY = 0;
+let playerSpeed = 1;
+
+setInterval(() => {
+    if (keys['w']) {
+        playerY -= playerSpeed;
+    }
+    else if (keys['a']) {
+        playerX -= playerSpeed;
+    }
+    else if (keys['s']) {
+        playerY += playerSpeed;
+    }
+    else if (keys['d']) {
+        playerX += playerSpeed;
+    }
+
+
+    // ctxPlayer.clearRect(0,0, canvasPlayer.width, canvasPlayer.height);
+    clearCtx(ctxPlayer, canvasPlayer);
+    drawImage(playerX, playerY, playerImage, ctxPlayer);
+}, 1000/30)
+
+
+
+// draw3DMap(50,50,50);
+
+random_map_btn.addEventListener('click', () => {    
+    clearCtx(ctx, canvas);
     drawRandomBlockMap(50, 50)
 });
-random_block_map_btn.addEventListener('click', () => {
-    ctx.translate(- canvas.width/2, -50);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.translate(canvas.width/2, 50);
+random_block_map_btn.addEventListener('click', () => {    
+    clearCtx(ctx, canvas);
     drawBlockMap(50, 50)
 });
 random_tiled_map_btn.addEventListener('click', () => {
