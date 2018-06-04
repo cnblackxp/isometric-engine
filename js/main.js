@@ -21,7 +21,7 @@ let keys = {};
 document.addEventListener('keydown', (e) => keys[e.key] = true);
 document.addEventListener('keyup', (e) => keys[e.key] = false);
 
-const tile_width = 20;
+const tile_width = 100;
 const tile_height = tile_width/2;
 
 
@@ -122,9 +122,9 @@ const draw3DBlock = (x, y, z, c) => {
     ctx.save();
     ctx.translate((x-y) * tile_width/2, (y+x) * tile_height/2);
 
-    if (z > 5) {
-        ctx.globalAlpha = 0.2;
-    }
+    // if (z > 5) {
+    //     ctx.globalAlpha = 0.2;
+    // }
     
     
 
@@ -216,7 +216,7 @@ const draw3DMap = (w, h, l) => {
         for (let y = 0; y < h; y ++) {
             for (let x = 0; x < w; x ++) {
                 // if (Math.random() < 0.5)
-                if (z%20 === 0)
+                if (z%5 === 0)
                     draw3DBlock(x, y, z, randomColorObject() );
             }
         }
@@ -257,7 +257,7 @@ const preloadImage = (src, cb) => {
 
 
 //translate canvas to the middle
-let canvasY = 100
+let canvasY = 300
 
 const clearCtx = (_ctx, _canvas) => {
     _ctx.translate(- _canvas.width/2, -canvasY);
@@ -268,37 +268,62 @@ const clearCtx = (_ctx, _canvas) => {
 ctx.translate(canvas.width/ 2, canvasY);
 ctxPlayer.translate(canvasPlayer.width/ 2, canvasY);
 
-ctx.globalAlpha = 0.5;
-drawMapRandom(50, 50);
-ctx.globalAlpha = 1;
-const playerImage = preloadImage('assets/player.png')//, (img) => drawImage(0,0, img,ctxPlayer));
-let playerX = 0;
-let playerY = 0;
-let playerSpeed = 1;
-
-setInterval(() => {
-    if (keys['w']) {
-        playerY -= playerSpeed;
-    }
-    else if (keys['a']) {
-        playerX -= playerSpeed;
-    }
-    else if (keys['s']) {
-        playerY += playerSpeed;
-    }
-    else if (keys['d']) {
-        playerX += playerSpeed;
-    }
-
-
-    // ctxPlayer.clearRect(0,0, canvasPlayer.width, canvasPlayer.height);
-    clearCtx(ctxPlayer, canvasPlayer);
-    drawImage(playerX, playerY, playerImage, ctxPlayer);
-}, 1000/30)
 
 
 
-// draw3DMap(50,50,50);
+
+const playerSystem = () => {
+    ctx.globalAlpha = 0.5;
+    drawMapRandom(50, 50);
+    ctx.globalAlpha = 1;
+    const playerImage = preloadImage('assets/player.png')//, (img) => drawImage(0,0, img,ctxPlayer));
+    let playerX = 0;
+    let playerY = 0;
+    let playerSpeed = 1;
+
+    setInterval(() => {
+        if (keys['w']) {
+            playerY -= playerSpeed;
+        }
+        else if (keys['a']) {
+            playerX -= playerSpeed;
+        }
+        else if (keys['s']) {
+            playerY += playerSpeed;
+        }
+        else if (keys['d']) {
+            playerX += playerSpeed;
+        }
+
+
+        // ctxPlayer.clearRect(0,0, canvasPlayer.width, canvasPlayer.height);
+        clearCtx(ctxPlayer, canvasPlayer);
+        drawImage(playerX, playerY, playerImage, ctxPlayer);
+    }, 1000/30)
+
+
+}
+// playerSystem();
+
+
+
+
+// draw3DMap(25,25,25);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 random_map_btn.addEventListener('click', () => {    
     clearCtx(ctx, canvas);
@@ -510,7 +535,7 @@ const drawElevation = () => {
     }
     _drawLast.forEach(el => el());
 }
-
+drawElevation();
 
 
 
