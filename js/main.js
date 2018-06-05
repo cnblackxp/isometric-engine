@@ -21,7 +21,27 @@ let keys = {};
 document.addEventListener('keydown', (e) => keys[e.key] = true);
 document.addEventListener('keyup', (e) => keys[e.key] = false);
 
-const tile_width = 100;
+
+const mouse = {
+    x: 0,
+    y: 0,
+
+    actualX() {
+        return this.x - canvasX;
+    },
+    actualY() {
+        return this.y - canvasY;
+    }
+}
+
+window.addEventListener('mousemove', (e) => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+    // console.log(mouse);
+})
+
+
+const tile_width = 20;
 const tile_height = tile_width/2;
 
 
@@ -216,7 +236,7 @@ const draw3DMap = (w, h, l) => {
         for (let y = 0; y < h; y ++) {
             for (let x = 0; x < w; x ++) {
                 // if (Math.random() < 0.5)
-                if (z%5 === 0)
+                // if (z%5 === 0)
                     draw3DBlock(x, y, z, randomColorObject() );
             }
         }
@@ -257,16 +277,17 @@ const preloadImage = (src, cb) => {
 
 
 //translate canvas to the middle
-let canvasY = 300
+let canvasY = 300;
+let canvasX = canvas.width/ 2;
 
 const clearCtx = (_ctx, _canvas) => {
-    _ctx.translate(- _canvas.width/2, -canvasY);
+    _ctx.translate(-canvasX, -canvasY);
     _ctx.clearRect(0, 0, _canvas.width, _canvas.height);
-    _ctx.translate(_canvas.width/2, canvasY);
+    _ctx.translate(canvasX, canvasY);
 }
-
-ctx.translate(canvas.width/ 2, canvasY);
-ctxPlayer.translate(canvasPlayer.width/ 2, canvasY);
+ctx.translate(canvasX, canvasY);
+// ctx.rotate(-45 * Math.PI / 180);
+ctxPlayer.translate(canvasX, canvasY);
 
 
 
@@ -274,7 +295,7 @@ ctxPlayer.translate(canvasPlayer.width/ 2, canvasY);
 
 const playerSystem = () => {
     ctx.globalAlpha = 0.5;
-    drawMapRandom(50, 50);
+    // drawMapRandom(50, 50);
     ctx.globalAlpha = 1;
     const playerImage = preloadImage('assets/player.png')//, (img) => drawImage(0,0, img,ctxPlayer));
     let playerX = 0;
@@ -298,17 +319,24 @@ const playerSystem = () => {
 
         // ctxPlayer.clearRect(0,0, canvasPlayer.width, canvasPlayer.height);
         clearCtx(ctxPlayer, canvasPlayer);
-        drawImage(playerX, playerY, playerImage, ctxPlayer);
+        // drawImage(playerX, playerY, playerImage, ctxPlayer);
+
+        //mouseSHIT
+        ctxPlayer.fillStyle = 'red';
+        ctxPlayer.strokeStyle = 'white';
+        ctxPlayer.fillRect(mouse.actualX(), mouse.actualY(), 5, 5);
+        ctxPlayer.strokeRect(mouse.actualX(), mouse.actualY(), 5, 5);
+
     }, 1000/30)
 
 
 }
-// playerSystem();
+playerSystem();
 
 
 
 
-// draw3DMap(25,25,25);
+draw3DMap(25,25,25);
 
 
 
@@ -535,7 +563,7 @@ const drawElevation = () => {
     }
     _drawLast.forEach(el => el());
 }
-drawElevation();
+// drawElevation();
 
 
 
