@@ -1,4 +1,41 @@
 import { randomColor, randomColorObject, color, shade, bright } from "./color.js";
+import Equation from './equation.js';
+// console.log(Equation.lineEquationString(
+//     {x: 0, y: 0},
+//     {x: 20, y: 8}
+// ))
+
+// console.log(Equation.slope(
+//     {x: 0, y: 0},
+//     {x: 20, y: 8}
+// ))
+
+const line1 = Equation.lineEquation(
+    {x: 0, y: 0},
+    {x: 20, y: 8},
+    {x: 10, y: 10}
+);
+
+//above
+console.log(Equation.pointPos(
+    line1, 
+    {x: 15, y: 11}
+)); // -1
+//on the line
+console.log(Equation.pointPos(
+    line1, 
+    {x: 15, y: 12}
+)); // 0
+//under
+console.log(Equation.pointPos(
+    line1, 
+    {x: 15, y: 15}
+)); // 1
+
+
+
+
+
 
 const canvas = document.querySelector('canvas[iso-background]');
 const ctx = canvas.getContext('2d');

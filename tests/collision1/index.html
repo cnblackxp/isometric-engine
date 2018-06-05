@@ -13,10 +13,16 @@
         canvas {
             background-color: black;
         }
+        p {
+            padding: 30px;
+        }
     </style>
 </head>
 <body>
     <canvas width="500" height="250"></canvas>
+    <p>
+        hover over the canvas
+    </p>
     <script>
         const canvas = document.querySelector('canvas');
         const ctx = canvas.getContext('2d');
@@ -125,8 +131,8 @@
         // drawLine();
         canvas.addEventListener('mousemove', (e) => {
             // console.log(e.offsetX, e.offsetY);
-            const m_x = e.offsetX;
-            m_y = e.offsetY;
+            const m_x = e.offsetX,
+                m_y = e.offsetY;
             
             // if (checkCollision({x, y}, {x: 0, y: 0, width: canvas.width, height: canvas.height})) {
             //     drawLine('green');

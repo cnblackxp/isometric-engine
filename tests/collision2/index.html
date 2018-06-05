@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+        canvas {
+            background-color: black;
+        }
+        p {
+            padding: 30px;
+        }
+    </style>
+</head>
+<body>
+    <canvas width="500" height="250"></canvas>
+    <p>
+        hover over the canvas
+    </p>
+    <script type="module">
+        import Equation from "../../js/equation.js";
+
+        const canvas = document.querySelector('canvas');
+        const ctx = canvas.getContext('2d');
+        const drawLine = (color = 'white') => {
+            ctx.clearRect(0,0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(canvas.width/2,0);
+            ctx.lineTo(canvas.width, canvas.height/2);
+            ctx.lineTo(canvas.width/2, canvas.height);
+            ctx.lineTo(0, canvas.height/2);
+            ctx.closePath();
+            ctx.stroke();
+
+            
+            ctx.beginPath();
+            ctx.moveTo(canvas.width/2,0);
+            ctx.lineTo(canvas.width/2,canvas.height);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(0,canvas.height/2);
+            ctx.lineTo(canvas.width,canvas.height/2);
+            ctx.stroke();
+        }
+
+        const drawTile = (tile, color = 'white') => {
+            // ctx.clearRect(0,0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = '10px';
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(tile.x + tile.width/2, tile.y);
+            ctx.lineTo(tile.x + tile.width, tile.y + tile.height/2);
+            ctx.lineTo(tile.x + tile.width/2, tile.y + tile.height);
+            ctx.lineTo(tile.x, tile.y + tile.height/2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            
+            // ctx.beginPath();
+            // ctx.moveTo(tile.width/2,0);
+            // ctx.lineTo(tile.width/2,tile.height);
+            // ctx.stroke();
+
+            // ctx.beginPath();
+            // ctx.moveTo(0,tile.height/2);
+            // ctx.lineTo(tile.width,tile.height/2);
+            // ctx.stroke();
+        }
+
+        const checkCollision = (point, tile) => {
+            //check outside bound
+            if (point.x > tile.x && point.x < tile.x + tile.width &&
+                point.y > tile.y && point.y < tile.y + tile.height) {
+                    //left side check
+                    let tempCheck;
+                    if (point.x <= tile.x + tile.width/2) {
+
+                        tempCheck = tile.y + tile.height/2;
+                        //top side check
+                        if (point.y <= tempCheck) {
+                            //under slope
+                            return (
+                                Equation.pointPos(Equation.lineEquation(
+                                    {x: tile.x, y: tile.y + tile.height/2},
+                                    {x: tile.x + tile.width/2, y: tile.y},
+                                ), point) > 0
+                            );
+                                
+                        }
+                        //bottom side check
+                        else {
+                            //above slope
+                            return (
+                                Equation.pointPos(Equation.lineEquation(
+                                    {x: tile.x, y: tile.y + tile.height/2},
+                                    {x: tile.x + tile.width/2, y: tile.y + tile.height},
+                                ), point) < 0
+                            );
+                        }
+                    }
+                    //right side check
+                    else {
+                        tempCheck = tile.y + tile.height/2;
+                        //top side check
+                        if (point.y <= tempCheck) {
+                            //under slope
+                            return (
+                                Equation.pointPos(Equation.lineEquation(
+                                    {x: tile.x + tile.width/2, y: tile.y},
+                                    {x: tile.x + tile.width, y: tile.y + tile.height/2},
+                                ), point) > 0
+                            )
+                        }
+                        //bottom side check
+                        else {
+                            //above slope
+                            return (
+                                Equation.pointPos(Equation.lineEquation(
+                                    {x: tile.x + tile.width/2, y: tile.y + tile.height},
+                                    {x: tile.x + tile.width, y: tile.y + tile.height/2},
+                                ), point) < 0
+                            );
+                        }
+                    }
+                }
+            return false;
+        }
+        
+        const tile_width = 50,
+            tile_height = tile_width/2;
+
+        // drawLine();
+        canvas.addEventListener('mousemove', (e) => {
+            // console.log(e.offsetX, e.offsetY);
+            const m_x = e.offsetX,
+                m_y = e.offsetY;
+            
+            // if (checkCollision({x, y}, {x: 0, y: 0, width: canvas.width, height: canvas.height})) {
+            //     drawLine('green');
+            // } else {
+            //     drawLine('red');                
+            // }
+                
+            for (let x = 0; x < canvas.width/tile_width; x ++) {
+                for (let y = 0; y < canvas.height/tile_height; y ++) {
+                    const tile = {
+                        x: x * tile_width,
+                        y: y * tile_height,
+                        width: tile_width,
+                        height: tile_height
+                    }
+                    if (checkCollision({x: m_x, y: m_y}, tile))
+                        drawTile(tile, 'green');
+                    else 
+                        drawTile(tile, 'red');
+                }
+            }
+
+
+            // const tile = {
+            //     x: 125,
+            //     y: 125/2,
+            //     width: tile_width,
+            //     height: tile_height
+            // }
+            // if (checkCollision({x: m_x, y: m_y}, tile))
+            //     drawTile(tile, 'green');
+            // else 
+            //     drawTile(tile, 'red');
+
+
+            // const tile2 = {
+            //     x: 0,
+            //     y: 0,
+            //     width: tile_width,
+            //     height: tile_height
+            // }
+            // if (checkCollision({x: m_x, y: m_y}, tile2))
+            //     drawTile(tile2, 'green');
+            // else 
+            //     drawTile(tile2, 'red');
+
+
+
+
+
+
+
+            // if (x <= canvas.width/2) {
+            //     drawLine('green');
+            //     if (y <= canvas.height/2) {
+            //         // drawLine('blue');
+            //         if (y > canvas.height/2 - x/2) {
+            //             drawLine('red'); 
+            //         }
+            //     } else {
+            //         if (y < canvas.height/2 + x/2) {
+            //             drawLine('red'); 
+            //         }
+            //     }
+
+
+            // } else {
+            //     drawLine('green');
+            //     if (y <= canvas.height/2) {
+            //         // drawLine('red');
+            //         if (y > (x-canvas.width/2)/2) {
+            //             drawLine('red');
+            //             // console.log('daisnd'); 
+            //         }
+            //     } 
+            //     else {
+            //         if (y < canvas.height - (x-canvas.width/2)/2) {
+            //             drawLine('red'); 
+            //         }
+            //     }
+            // }
+            
+                // if (y > x/2) {
+            //     drawLine('red');
+            //     console.log('under slope');
+            // }
+                
+            // if (y < x/2) {
+            //     drawLine('green');
+            //     console.log('above slope');
+            // }
+                
+        })
+
+    </script>
+</body>
+</html>
