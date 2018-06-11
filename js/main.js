@@ -1,5 +1,8 @@
 import { randomColor, randomColorObject, color, shade, bright } from "./color.js";
 import Equation from './equation.js';
+import { Tile } from "./tile.js";
+import { IsoMap } from "./map.js";
+import { checkCollision } from "./collision.js";
 // console.log(Equation.lineEquationString(
 //     {x: 0, y: 0},
 //     {x: 20, y: 8}
@@ -314,7 +317,7 @@ const preloadImage = (src, cb) => {
 
 
 //translate canvas to the middle
-let canvasY = 300;
+let canvasY = 0;
 let canvasX = canvas.width/ 2;
 
 const clearCtx = (_ctx, _canvas) => {
@@ -354,6 +357,38 @@ const playerSystem = () => {
         }
 
 
+
+
+        // _map.tiles.forEach(tile => {
+        //     // console.log('sad');
+        //     const _mouse =  {
+        //         x: mouse.x,
+        //         y: mouse.y,
+        //     }
+        //     const _tile = {
+        //         x: tile.actualX() + canvasX - tile_width/2,
+        //         y: tile.actualY() + canvasY - tile_height/2,
+        //         width: tile_width,
+        //         height: tile_height
+        //     }
+            
+            
+
+        //     if (checkCollision(_mouse, _tile)) {
+        //         console.log(tile.x, tile.y);
+
+        //         tile.color = {
+        //             r: 255,
+        //             b: 0,
+        //             g: 0
+        //         }
+
+        //         _map.draw(ctx);
+        //     }
+        // })
+
+
+
         // ctxPlayer.clearRect(0,0, canvasPlayer.width, canvasPlayer.height);
         clearCtx(ctxPlayer, canvasPlayer);
         // drawImage(playerX, playerY, playerImage, ctxPlayer);
@@ -364,6 +399,11 @@ const playerSystem = () => {
         ctxPlayer.fillRect(mouse.actualX(), mouse.actualY(), 5, 5);
         ctxPlayer.strokeRect(mouse.actualX(), mouse.actualY(), 5, 5);
 
+
+        // clearCtx(ctx, canvasPlayer);
+        
+        // _map.draw(ctx);
+
     }, 1000/30)
 
 
@@ -373,7 +413,7 @@ playerSystem();
 
 
 
-draw3DMap(25,25,25);
+// draw3DMap(25,25,25);
 
 
 
@@ -426,7 +466,7 @@ random_tiled_map_btn.addEventListener('click', () => {
 // ];
 
 
-// drawMap(25,25);
+// drawMapRandom(50,50);
 // drawBlockMap(25,25);
 // drawMap(map);
 
@@ -601,6 +641,40 @@ const drawElevation = () => {
     _drawLast.forEach(el => el());
 }
 // drawElevation();
+
+
+
+
+
+
+
+
+
+
+
+
+const _map = new IsoMap({
+    width: 100,
+    height: 100
+});
+// console.log(_map)
+_map.draw(ctx);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
