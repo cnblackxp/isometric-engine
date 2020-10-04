@@ -21,17 +21,17 @@ const line1 = Equation.lineEquation(
 
 //above
 console.log(Equation.pointPos(
-    line1, 
+    line1,
     {x: 15, y: 11}
 )); // -1
 //on the line
 console.log(Equation.pointPos(
-    line1, 
+    line1,
     {x: 15, y: 12}
 )); // 0
 //under
 console.log(Equation.pointPos(
-    line1, 
+    line1,
     {x: 15, y: 15}
 )); // 1
 
@@ -93,10 +93,10 @@ const drawTile = (x, y, c) => {
     //the new tile position is to move tile_width/2 on the x and tile_height/2 on the y
     ctx.translate(
         (x-y) * tile_width/2,
-        //this wont have any effect if it's zer0 
+        //this wont have any effect if it's zer0
         (y+x) * tile_height/2
     );
-    
+
     ctx.beginPath();
     ctx.moveTo(0, 0);
     ctx.lineTo(tile_width/2, tile_height/2);
@@ -125,8 +125,7 @@ const drawBlock = (x, y, z, c) => {
 
     ctx.save();
     ctx.translate((x-y) * tile_width/2, (y+x) * tile_height/2);
-    
-    
+
 
     //top side
     ctx.beginPath();
@@ -185,8 +184,7 @@ const draw3DBlock = (x, y, z, c) => {
     // if (z > 5) {
     //     ctx.globalAlpha = 0.2;
     // }
-    
-    
+
 
     //top side
     ctx.beginPath();
@@ -241,11 +239,11 @@ const drawMap = (map) => {
             if (!map[y][x].elevation || (map[x][y].elevation == 0)) {
                 drawTile(x, y, map[y][x].color);
                 console.log('tile')
-            }
-            else 
+            } else {
                 drawBlock(x, y, map[y][x].elevation, map[y][x].color)
+            }
         }
-    }   
+    }
 }
 
 
@@ -271,13 +269,35 @@ const drawBlockMap = (w, h) => {
 
 }
 
+
+const cubeColor = {
+    r: 0,
+    g: 100,
+    b: 255,
+}
+let increasing = true;
 const draw3DMap = (w, h, l) => {
+    cubeColor.r = cubeColor.r + (increasing ? 10 : -10);
+    if (cubeColor.r > 255) {
+        increasing = false;
+    } else if (cubeColor.r < 0) {
+        increasing = true;
+    }
+    console.log(cubeColor);
     for (let z = 0; z < l; z ++) {
         for (let y = 0; y < h; y ++) {
             for (let x = 0; x < w; x ++) {
-                // if (Math.random() < 0.5)
+                // if (Math.random() < 0.1)
                 // if (z%5 === 0)
-                    draw3DBlock(x, y, z, randomColorObject() );
+                const min = Math.ceil(Math.random() * 4) //4;
+                const max = Math.ceil(Math.random() * 4) + 25 //25;
+                if ((x < min || x > max) || (x >= min && x <= max && (y < min || y > max)))
+                if ((z < min || z > max) || (z >= min && z <= max && (x < min || x > max)))
+                if ((y < min || y > max) || (y >= min && y <= max && (z < min || z > max)))
+                    // draw3DBlock(x + (Math.random() - 0.5), y + (Math.random() - 0.5), z + (Math.random() - 0.5), randomColorObject() );
+                    draw3DBlock(x + (Math.random() - 0.5), y + (Math.random() - 0.5), z + (Math.random() - 0.5), cubeColor );
+                    // draw3DBlock(x, y, z, { r: 0, g: 100, b: 255 } );
+                    // draw3DBlock(x, y, z, randomColorObject() );
             }
         }
     }
@@ -292,10 +312,10 @@ const drawImage = (x, y, img, _ctx) => {
     //the new tile position is to move tile_width/2 on the x and tile_height/2 on the y
     _ctx.translate(
         (x-y) * tile_width/2,
-        //this wont have any effect if it's zer0 
+        //this wont have any effect if it's zer0
         (y+x) * tile_height/2
     );
-    
+
     _ctx.drawImage(img, -img.width/2, -img.height + tile_height/2);
 
 
@@ -317,7 +337,7 @@ const preloadImage = (src, cb) => {
 
 
 //translate canvas to the middle
-let canvasY = 0;
+let canvasY = 350;
 let canvasX = canvas.width/ 2;
 
 const clearCtx = (_ctx, _canvas) => {
@@ -371,8 +391,7 @@ const playerSystem = () => {
         //         width: tile_width,
         //         height: tile_height
         //     }
-            
-            
+
 
         //     if (checkCollision(_mouse, _tile)) {
         //         console.log(tile.x, tile.y);
@@ -401,7 +420,7 @@ const playerSystem = () => {
 
 
         // clearCtx(ctx, canvasPlayer);
-        
+
         // _map.draw(ctx);
 
     }, 1000/30)
@@ -413,7 +432,7 @@ playerSystem();
 
 
 
-// draw3DMap(25,25,25);
+draw3DMap(30,30,30);
 
 
 
@@ -430,11 +449,11 @@ playerSystem();
 
 
 
-random_map_btn.addEventListener('click', () => {    
+random_map_btn.addEventListener('click', () => {
     clearCtx(ctx, canvas);
     drawRandomBlockMap(50, 50)
 });
-random_block_map_btn.addEventListener('click', () => {    
+random_block_map_btn.addEventListener('click', () => {
     clearCtx(ctx, canvas);
     drawBlockMap(50, 50)
 });
@@ -491,10 +510,10 @@ const _top_color = {
     b: 200,
 }
 
-const _translate = (x, y) => 
+const _translate = (x, y) =>
     ctx.translate((x-y) * tile_width/2, (y+x) * tile_height/2);
 
-    
+
 const _drawLast = [];
 
 const _drawTile = (x, y, z) => {
@@ -509,7 +528,7 @@ const _drawTile = (x, y, z) => {
     ctx.fillStyle = color(_top_color);//z > 0 ? right_color: top_color;
     ctx.fill();
     ctx.restore();
-    
+
 
     if (z > 0) {
         console.log(z);
@@ -623,7 +642,7 @@ const _drawTile = (x, y, z) => {
 
         })
 
-        
+
     }
 
 
@@ -658,7 +677,7 @@ const _map = new IsoMap({
     height: 100
 });
 // console.log(_map)
-_map.draw(ctx);
+// _map.draw(ctx);
 
 
 
@@ -683,6 +702,12 @@ _map.draw(ctx);
 
 
 
+
+
+setInterval(() => {
+    clearCtx(ctx, canvas)
+    draw3DMap(30,30,30);
+}, 1000/12);
 
 
 
